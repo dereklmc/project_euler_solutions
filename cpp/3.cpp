@@ -1,44 +1,54 @@
+/*
+ * Copyright (C) 2011 Derek McLean
+ * 
+ * You are free to do whatever you want with this program provided
+ * this notice is preserved. This program is free software. It 
+ * comes without any warranty, to the extent permitted by applicable law.
+ * 
+ * Solution for Project Euler Problem #3
+ * The problem page can be found at:
+ * (http://projecteuler.net/index.php?section=problems&id=3).
+ */
+
 #include <iostream>
-#include <vector>
+#include <list>
+#include <algorithm>
 
 using namespace std;
 
-vector<long> getMultiples(long num) {
-	vector<long> multiples;
+/*
+ * Returns a list of all factors of a given number.
+ */
+list<long> getFactors(long num) {
+	list<long> facts;
 	for (long divisor = 2; divisor < num/divisor; divisor++) {
 		if (num % divisor == 0) {
-			multiples.push_back(divisor);
-			multiples.push_back(num/divisor);
+			facts.push_back(divisor);
+			facts.push_back(num/divisor);
 		}
 	}
-	return multiples;
+	return facts;
 }
 
 int main() {
 	long number = 600851475143;
-	vector<long> mults = getMultiples(number);
+	list<long> factors = getFactors(number);
 	
-	long largestPrime = number;
-	
-	vector<long>::iterator it = mults.begin();
-	while (it != mults.begin()) {
-		vector<long>::iterator testIt = mults.begin();
-		bool isPrime = true;
-		long num = *it;
-		while (testIt < it) {
-			if (num % *testIt == 0) {
-				isPrime = false;
-			}
-			testIt++;
-		}
-		if (isPrime) {
-			largestPrime = num;
-			break;
-		}
-		it--;
+	factors.sort();
+
+	list<long>::iterator it;
+	for (it = factors.begin(); it != factors.end(); it++) {
+		long fact = *it;
+		list<long>::iterator sieveIt = it;
+		sieveIt++;
+		while (sieveIt != factors.end())
+			if (*sieveIt % fact == 0)
+				sieveIt = factors.erase(sieveIt);
+			else
+				sieveIt++;
 	}
 	
-	cout << largestPrime << "\n";
+	cout << "Largest Prime: " << factors.back() << endl;
 	
 	return 0;
-}	
+}
